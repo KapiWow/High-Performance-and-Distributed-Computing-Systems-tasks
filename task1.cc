@@ -47,7 +47,7 @@ double benchmark(T fn) {
 		}
 	}
 
-	size_t nr_runs = 3e7;
+	size_t nr_runs = 1e8;
 	double result = 0;
 
 	auto t1 = std::chrono::high_resolution_clock::now();
@@ -190,6 +190,53 @@ inline void my_tri_interp(
 	//__m256d val = _mm256_load_pd(&values[0][0][0]);
 	//__m256d res = 
 	//==============================================================
+	//__m256d p1_0 = _mm256_set1_pd(1-p[0]);
+	//__m256d p0_0 = _mm256_set1_pd(p[0]);
+	//__m256d p1_1 = _mm256_set_pd(1-p[1], 1-p[1], p[1], p[1]) * _mm256_set_pd(1-p[2], p[2], 1-p[2], p[2]);
+	//__m256d coef1 = p1_0*p1_1;
+	//__m256d coef2 = p0_0*p1_1;
+	//__m256i mask = _mm256_setr_epi64x(-1, -1, -1, 1);
+	//__m256d result_256 = _mm256_setzero_pd();
+   	//__m256d v1 = _mm256_set_pd(values[0][0][0][0], values[0][0][1][0], values[0][1][0][0], values[0][1][1][0]);
+   	//__m256d v2 = _mm256_set_pd(values[1][0][0][0], values[1][0][1][0], values[1][1][0][0], values[1][1][1][0]);
+   	//__m256d v3 = _mm256_set_pd(values[0][0][0][1], values[0][0][1][1], values[0][1][0][1], values[0][1][1][1]);
+   	//__m256d v4 = _mm256_set_pd(values[1][0][0][1], values[1][0][1][1], values[1][1][0][1], values[1][1][1][1]);
+   	//__m256d v5 = _mm256_set_pd(values[0][0][0][2], values[0][0][1][2], values[0][1][0][2], values[0][1][1][2]);
+   	//__m256d v6 = _mm256_set_pd(values[1][0][0][2], values[1][0][1][2], values[1][1][0][2], values[1][1][1][2]);
+	//v1 = v1*coef1 + v2*coef2;
+	//v3 = v3*coef1 + v4*coef2;
+	//v5 = v5*coef1 + v6*coef2;
+	//result[0] = v1[0] + v1[1] + v1[2] + v1[3];
+	//result[1] = v3[0] + v3[1] + v3[2] + v3[3];
+	//result[2] = v5[0] + v5[1] + v5[2] + v5[3];
+	//==============================================================
+	//__m256d p1_0 = _mm256_set1_pd(1-p[0]);
+	//__m256d p0_0 = _mm256_set1_pd(p[0]);
+	//__m256d p1_1 = _mm256_set_pd(p[1], p[1], 1-p[1], 1-p[1]) * _mm256_set_pd(p[2], 1-p[2], p[2], 1-p[2]);
+	//__m256d coef1 = p1_0*p1_1;
+	//__m256d coef2 = p0_0*p1_1;
+	//__m256i mask = _mm256_setr_epi64x(-1, -1, -1, 1);
+	//__m256d result_256 = _mm256_setzero_pd();
+   	//__m256d v000 = _mm256_maskload_pd((double*)values , mask);
+   	//__m256d v001 = _mm256_maskload_pd((double*)values + 3, mask);
+   	//__m256d v010 = _mm256_maskload_pd((double*)values + 6, mask);
+   	//__m256d v011 = _mm256_maskload_pd((double*)values + 9, mask);
+   	//__m256d v100 = _mm256_maskload_pd((double*)values + 12, mask);
+   	//__m256d v101 = _mm256_maskload_pd((double*)values + 15, mask);
+   	//__m256d v110 = _mm256_maskload_pd((double*)values + 18, mask);
+   	//__m256d v111 = _mm256_maskload_pd((double*)values + 21, mask);
+	//result_256 = 
+	//	v000*coef1[0] + 
+	//	v001*coef1[1] + 
+	//	v010*coef1[2] + 
+	//	v011*coef1[3] + 
+	//	v100*coef2[0] + 
+	//	v101*coef2[1] + 
+	//	v110*coef2[2] + 
+	//	v111*coef2[3];
+	////}
+	//_mm256_maskstore_pd((double*)result ,mask, result_256);
+	//==============================================================
 	//double p1 = p[0];
 	//double p2 = p[1];
 	//double p3 = p[2];
@@ -224,8 +271,8 @@ inline void my_tri_interp(
    	__m256d v101 = _mm256_maskload_pd((double*)values + 15, mask);
    	__m256d v110 = _mm256_maskload_pd((double*)values + 18, mask);
    	__m256d v111 = _mm256_maskload_pd((double*)values + 21, mask);
-	result_256 = ((v000*(1-p[2]) + v001*(p[2]))*(1-p[1]) + (v010*(1-p[2]) + v011*(p[2]))*(p[1]))*(1-p[0]) +
-			((v100*(1-p[2]) + v101*(p[2]))*(1-p[1]) + (v110*(1-p[2]) + v111*(p[2]))*(p[1]))*(p[0]);
+	//result_256 = ((v000*(1-p[2]) + v001*(p[2]))*(1-p[1]) + (v010*(1-p[2]) + v011*(p[2]))*(p[1]))*(1-p[0]) +
+	//		((v100*(1-p[2]) + v101*(p[2]))*(1-p[1]) + (v110*(1-p[2]) + v111*(p[2]))*(p[1]))*(p[0]);
 	_mm256_maskstore_pd((double*)result ,mask, result_256);
 	//=====================================================
 	

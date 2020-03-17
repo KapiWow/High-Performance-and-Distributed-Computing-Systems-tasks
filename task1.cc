@@ -214,31 +214,50 @@ inline void my_tri_interp(
 	//}
 	//_mm256_maskstore_pd((double*)result ,mask, result_256);
 	//=====================================================
-	//__m256i mask = _mm256_setr_epi64x(-1, -1, -1, 1);
-	//__m256d result_256 = _mm256_setzero_pd();
-   	//__m256d v000 = _mm256_maskload_pd((double*)values , mask);
-   	//__m256d v001 = _mm256_maskload_pd((double*)values + 3, mask);
-   	//__m256d v010 = _mm256_maskload_pd((double*)values + 6, mask);
-   	//__m256d v011 = _mm256_maskload_pd((double*)values + 9, mask);
-   	//__m256d v100 = _mm256_maskload_pd((double*)values + 12, mask);
-   	//__m256d v101 = _mm256_maskload_pd((double*)values + 15, mask);
-   	//__m256d v110 = _mm256_maskload_pd((double*)values + 18, mask);
-   	//__m256d v111 = _mm256_maskload_pd((double*)values + 21, mask);
-	//result_256 = ((v000*(1-p[2]) + v001*(p[2]))*(1-p[1]) + (v010*(1-p[2]) + v011*(p[2]))*(p[1]))*(1-p[0]) +
-	//		((v100*(1-p[2]) + v101*(p[2]))*(1-p[1]) + (v110*(1-p[2]) + v111*(p[2]))*(p[1]))*(p[0]);
-	//_mm256_maskstore_pd((double*)result ,mask, result_256);
+	__m256i mask = _mm256_setr_epi64x(-1, -1, -1, 1);
+	__m256d result_256 = _mm256_setzero_pd();
+   	__m256d v000 = _mm256_maskload_pd((double*)values , mask);
+   	__m256d v001 = _mm256_maskload_pd((double*)values + 3, mask);
+   	__m256d v010 = _mm256_maskload_pd((double*)values + 6, mask);
+   	__m256d v011 = _mm256_maskload_pd((double*)values + 9, mask);
+   	__m256d v100 = _mm256_maskload_pd((double*)values + 12, mask);
+   	__m256d v101 = _mm256_maskload_pd((double*)values + 15, mask);
+   	__m256d v110 = _mm256_maskload_pd((double*)values + 18, mask);
+   	__m256d v111 = _mm256_maskload_pd((double*)values + 21, mask);
+	result_256 = ((v000*(1-p[2]) + v001*(p[2]))*(1-p[1]) + (v010*(1-p[2]) + v011*(p[2]))*(p[1]))*(1-p[0]) +
+			((v100*(1-p[2]) + v101*(p[2]))*(1-p[1]) + (v110*(1-p[2]) + v111*(p[2]))*(p[1]))*(p[0]);
+	_mm256_maskstore_pd((double*)result ,mask, result_256);
 	//=====================================================
-	for (int i = 0; i < 3; ++i) {
-		result[i] = 0;
-		result[i] += values[0][0][0][i] * (1 - p[0]) * (1 - p[1]) * (1 - p[2]);
-		result[i] += values[0][0][1][i] * (1 - p[0]) * (1 - p[1]) * (    p[2]);
-		result[i] += values[0][1][0][i] * (1 - p[0]) * (    p[1]) * (1 - p[2]);
-		result[i] += values[0][1][1][i] * (1 - p[0]) * (    p[1]) * (    p[2]);
-		result[i] += values[1][0][0][i] * (    p[0]) * (1 - p[1]) * (1 - p[2]);
-		result[i] += values[1][0][1][i] * (    p[0]) * (1 - p[1]) * (    p[2]);
-		result[i] += values[1][1][0][i] * (    p[0]) * (    p[1]) * (1 - p[2]);
-		result[i] += values[1][1][1][i] * (    p[0]) * (    p[1]) * (    p[2]);
-	}
+	
+	//double p1 = p[0];
+	//double p2 = p[1];
+	//double p3 = p[2];
+	//double p12 = p1*p2;
+	//double p13 = p1*p3;
+	//double p23 = p2*p3;
+	//double p123 = p12*p3;
+	//double coef[8];
+
+	//coef[7] = p123;
+	//coef[6] = p12 - p123;
+	//coef[5] = p13 - p123;
+	//coef[4] = p1 - p12  - coef[5];
+	//coef[3] = p23 - p123;
+	//coef[2] = p2 - p12 - coef[3];
+	//coef[1] = p3 - p13 - coef[3];
+	//coef[0] = 1 - p1 -p2 -p3 + p12 + p13 + p23 - p123;
+	//
+	//for (int i = 0; i < 3; ++i) {
+	//	result[i] = 0;
+	//	result[i] += values[0][0][0][i] * coef[0];
+	//	result[i] += values[0][0][1][i] * coef[1];
+	//	result[i] += values[0][1][0][i] * coef[2];
+	//	result[i] += values[0][1][1][i] * coef[3];
+	//	result[i] += values[1][0][0][i] * coef[4];
+	//	result[i] += values[1][0][1][i] * coef[5];
+	//	result[i] += values[1][1][0][i] * coef[6];
+	//	result[i] += values[1][1][1][i] * coef[7];
+	//}
 	//=====================================================
 	//for (int i = 0; i < 3; ++i) {
 	//	result[i] = 0;

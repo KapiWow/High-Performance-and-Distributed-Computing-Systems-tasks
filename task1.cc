@@ -166,8 +166,9 @@ void tri_interp_original(
 	}
 }
 
+
+
 #pragma GCC push_options
-#pragma GCC fast-math on
 #pragma GCC optimize ("-ffast-math")
 
 inline void my_tri_interp(
@@ -177,19 +178,11 @@ inline void my_tri_interp(
 	double voxel_size,
 	const double values[2][2][2][3]
 ) {
-	// Your code goes there
-
 	double p[3];
 	for (int i = 0; i < 3; ++i)
 		p[i] = (point[i] - corner[i]) / voxel_size;
-		//p[i] = (point[i] - corner[i]) * (0.3333333333333333333333);
-	//__m256d p0 = _mm256_set1_pd(p[0]);
-	//__m256d p1 = _mm256_set_pd(1-p[1], 1-p[1], p[1], p[1]);
-	//__m256d p2 = _mm256_set_pd(1-p[1], p[1], 1-p[1], p[1]);
-	//__m256d p3 = _mm256_mul_pd(p1,p2);
-	//__m256d val = _mm256_load_pd(&values[0][0][0]);
-	//__m256d res = 
 	//==============================================================
+	// ready 2.26 sec
 	//__m256d p1_0 = _mm256_set1_pd(1-p[0]);
 	//__m256d p0_0 = _mm256_set1_pd(p[0]);
 	//__m256d p1_1 = _mm256_set_pd(1-p[1], 1-p[1], p[1], p[1]) * _mm256_set_pd(1-p[2], p[2], 1-p[2], p[2]);
@@ -210,6 +203,7 @@ inline void my_tri_interp(
 	//result[1] = v3[0] + v3[1] + v3[2] + v3[3];
 	//result[2] = v5[0] + v5[1] + v5[2] + v5[3];
 	//==============================================================
+	// ready 2.552 sec
 	//__m256d p1_0 = _mm256_set1_pd(1-p[0]);
 	//__m256d p0_0 = _mm256_set1_pd(p[0]);
 	//__m256d p1_1 = _mm256_set_pd(p[1], p[1], 1-p[1], 1-p[1]) * _mm256_set_pd(p[2], 1-p[2], p[2], 1-p[2]);
@@ -234,9 +228,9 @@ inline void my_tri_interp(
 	//	v101*coef2[1] + 
 	//	v110*coef2[2] + 
 	//	v111*coef2[3];
-	////}
 	//_mm256_maskstore_pd((double*)result ,mask, result_256);
 	//==============================================================
+	//ready 2.408 sec
 	//double p1 = p[0];
 	//double p2 = p[1];
 	//double p3 = p[2];
@@ -261,21 +255,75 @@ inline void my_tri_interp(
 	//}
 	//_mm256_maskstore_pd((double*)result ,mask, result_256);
 	//=====================================================
-	__m256i mask = _mm256_setr_epi64x(-1, -1, -1, 1);
-	__m256d result_256 = _mm256_setzero_pd();
-   	__m256d v000 = _mm256_maskload_pd((double*)values , mask);
-   	__m256d v001 = _mm256_maskload_pd((double*)values + 3, mask);
-   	__m256d v010 = _mm256_maskload_pd((double*)values + 6, mask);
-   	__m256d v011 = _mm256_maskload_pd((double*)values + 9, mask);
-   	__m256d v100 = _mm256_maskload_pd((double*)values + 12, mask);
-   	__m256d v101 = _mm256_maskload_pd((double*)values + 15, mask);
-   	__m256d v110 = _mm256_maskload_pd((double*)values + 18, mask);
-   	__m256d v111 = _mm256_maskload_pd((double*)values + 21, mask);
+	//// ready 1.994 sec
+	//__m256i mask = _mm256_setr_epi64x(-1, -1, -1, 1);
+	//__m256d result_256 = _mm256_setzero_pd();
+   	//__m256d v000 = _mm256_maskload_pd((double*)values , mask);
+   	//__m256d v001 = _mm256_maskload_pd((double*)values + 3, mask);
+   	//__m256d v010 = _mm256_maskload_pd((double*)values + 6, mask);
+   	//__m256d v011 = _mm256_maskload_pd((double*)values + 9, mask);
+   	//__m256d v100 = _mm256_maskload_pd((double*)values + 12, mask);
+   	//__m256d v101 = _mm256_maskload_pd((double*)values + 15, mask);
+   	//__m256d v110 = _mm256_maskload_pd((double*)values + 18, mask);
+   	//__m256d v111 = _mm256_maskload_pd((double*)values + 21, mask);
 	//result_256 = ((v000*(1-p[2]) + v001*(p[2]))*(1-p[1]) + (v010*(1-p[2]) + v011*(p[2]))*(p[1]))*(1-p[0]) +
 	//		((v100*(1-p[2]) + v101*(p[2]))*(1-p[1]) + (v110*(1-p[2]) + v111*(p[2]))*(p[1]))*(p[0]);
+	//_mm256_maskstore_pd((double*)result ,mask, result_256);
+	
+	//=====================================================
+	//ready 2.001 sec
+	//__m256i mask = _mm256_setr_epi64x(-1, -1, -1, 1);
+	//__m256d result_256 = _mm256_setzero_pd();
+   	//__m256d v000 = _mm256_maskload_pd((double*)values , mask);
+   	//__m256d v001 = _mm256_maskload_pd((double*)values + 3, mask);
+   	//__m256d v010 = _mm256_maskload_pd((double*)values + 6, mask);
+   	//__m256d v011 = _mm256_maskload_pd((double*)values + 9, mask);
+   	//__m256d v100 = _mm256_maskload_pd((double*)values + 12, mask);
+   	//__m256d v101 = _mm256_maskload_pd((double*)values + 15, mask);
+   	//__m256d v110 = _mm256_maskload_pd((double*)values + 18, mask);
+   	//__m256d v111 = _mm256_maskload_pd((double*)values + 21, mask);
+	//__m256d v00 = v000 + p[0]*(v100 - v000);
+	//__m256d v01 = v001 + p[0]*(v101 - v001);
+	//__m256d v10 = v010 + p[0]*(v110 - v010);
+	//__m256d v11 = v011 + p[0]*(v111 - v011);
+	//__m256d v0 = v00 + p[1]*(v10 - v00);
+	//__m256d v1 = v01 + p[1]*(v11 - v01);
+	//result_256 = v0 + p[2]*(v1 - v0);
+	//_mm256_maskstore_pd((double*)result ,mask, result_256);
+	//=====================================================
+	//ready 1.831 sec
+	
+	__m256d p0 = _mm256_set1_pd(p[0]);
+	__m256d p1 = _mm256_set1_pd(p[1]);
+	__m256d p2 = _mm256_set1_pd(p[2]);
+
+	__m256i mask = _mm256_setr_epi64x(-1, -1, -1, 1);
+	__m256d result_256 = _mm256_setzero_pd();
+	
+   	__m256d v000 = _mm256_maskload_pd((double*)values , mask);
+   	__m256d v001 = _mm256_maskload_pd((double*)values + 3, mask);
+    __m256d v00 = v000 + p2*(v001 - v000);
+   	
+	__m256d v010 = _mm256_maskload_pd((double*)values + 6, mask);
+   	__m256d v011 = _mm256_maskload_pd((double*)values + 9, mask);
+    __m256d v01 = v010 + p2*(v011 - v010);
+   	
+	__m256d v100 = _mm256_maskload_pd((double*)values + 12, mask);
+   	__m256d v101 = _mm256_maskload_pd((double*)values + 15, mask);
+    __m256d v10 = v100 + p2*(v101 - v100);
+   	
+	__m256d v110 = _mm256_maskload_pd((double*)values + 18, mask);
+   	__m256d v111 = _mm256_maskload_pd((double*)values + 21, mask);
+    __m256d v11 = v110 + p2*(v111 - v110);
+   
+	__m256d v0 = v00 + p1*(v01 - v00);
+	__m256d v1 = v10 + p1*(v11 - v10);
+	
+	result_256 = v0 + p0*(v1 - v0);
+	
 	_mm256_maskstore_pd((double*)result ,mask, result_256);
 	//=====================================================
-	
+	//ready 2.594 sec
 	//double p1 = p[0];
 	//double p2 = p[1];
 	//double p3 = p[2];
@@ -306,6 +354,7 @@ inline void my_tri_interp(
 	//	result[i] += values[1][1][1][i] * coef[7];
 	//}
 	//=====================================================
+	// ready 2.344 sec
 	//for (int i = 0; i < 3; ++i) {
 	//	result[i] = 0;
 	//	result[i] += values[0][0][0][i] * (1 - p[0]) * (1 - p[1]) * (1 - p[2]);

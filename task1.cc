@@ -178,9 +178,9 @@ inline void my_tri_interp(
 	double voxel_size,
 	const double values[2][2][2][3]
 ) {
-	double p[3];
-	for (int i = 0; i < 3; ++i)
-		p[i] = (point[i] - corner[i]) / voxel_size;
+	//double p[3];
+	//for (int i = 0; i < 3; ++i)
+	//	p[i] = (point[i] - corner[i]) / voxel_size;
 	//==============================================================
 	// ready 2.26 sec
 	//__m256d p1_0 = _mm256_set1_pd(1-p[0]);
@@ -291,14 +291,13 @@ inline void my_tri_interp(
 	//result_256 = v0 + p[2]*(v1 - v0);
 	//_mm256_maskstore_pd((double*)result ,mask, result_256);
 	//=====================================================
-	//ready 1.831 sec
+	//ready 0.973 sec
 	
-	__m256d p0 = _mm256_set1_pd(p[0]);
-	__m256d p1 = _mm256_set1_pd(p[1]);
-	__m256d p2 = _mm256_set1_pd(p[2]);
-
+    __m256d p0 = _mm256_set1_pd((point[0] - corner[0]) / voxel_size);
+	__m256d p1 = _mm256_set1_pd((point[1] - corner[1]) / voxel_size);
+	__m256d p2 = _mm256_set1_pd((point[2] - corner[2]) / voxel_size);
+	
 	__m256i mask = _mm256_setr_epi64x(-1, -1, -1, 1);
-	__m256d result_256 = _mm256_setzero_pd();
 	
    	__m256d v000 = _mm256_maskload_pd((double*)values , mask);
    	__m256d v001 = _mm256_maskload_pd((double*)values + 3, mask);
@@ -319,9 +318,11 @@ inline void my_tri_interp(
 	__m256d v0 = v00 + p1*(v01 - v00);
 	__m256d v1 = v10 + p1*(v11 - v10);
 	
-	result_256 = v0 + p0*(v1 - v0);
+	__m256d result_256 = v0 + p0*(v1 - v0);
 	
-	_mm256_maskstore_pd((double*)result ,mask, result_256);
+	result[0] = result_256[0];
+	result[1] = result_256[1];
+	result[2] = result_256[2];
 	//=====================================================
 	//ready 2.594 sec
 	//double p1 = p[0];

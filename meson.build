@@ -4,6 +4,12 @@ cpp = meson.get_compiler('cpp')
 
 srcs = [
     'task1',
+    'task2_1',
+    'task2_2'
+]
+
+srcs_openmp = [
+    'task2_3',
 ]
 
 lib = [
@@ -12,10 +18,16 @@ lib = [
 cpp_arg = [
     '-O4',
     '-march=native',
-#	'-g',
-#	'-masm=intel',
-#	'-lpthread',
-#	'-ffast-math',
+    '-ffast-math'
+]
+
+openmp_arg = [
+	'-lpthread',
+    '-fopenmp',
+]
+
+linker_arg = [
+    '-fopenmp',
 ]
 
 foreach src : srcs
@@ -25,6 +37,17 @@ foreach src : srcs
 	    sources: src_name,
 	    dependencies : lib,
 	    cpp_args : cpp_arg,
+	)
+endforeach
+
+foreach src : srcs_openmp
+	src_name= src + '.cc'
+	executable(
+	    src, 
+	    sources: src_name,
+	    dependencies : lib,
+	    cpp_args : [cpp_arg + openmp_arg],
+        link_args : linker_arg,
 	)
 endforeach
 
